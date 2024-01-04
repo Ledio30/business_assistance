@@ -1,1 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Business Advertisements</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <!-- Header Section -->
+    <header>
+        <h1>Business Advertisements</h1>
+    </header>
+
+    <!-- Main Content Section -->
+    <section class="container">
+        <h2>Upload Your Business Advertisement</h2>
+        <form id="uploadForm" enctype="multipart/form-data">
+            <label for="image">Choose Image:</label>
+            <input type="file" id="image" name="image" accept="image/*" required>
+            <label for="description">Description:</label>
+            <textarea id="description" name="description" rows="4" required></textarea>
+            <button type="button" onclick="submitForm()">Upload</button>
+        </form>
+    </section>
+
+    <!-- Display Section -->
+    <section id="display" class="container">
+        <h2>Business Advertisements</h2>
+        <!-- Display uploaded content here -->
+    </section>
+
+    <!-- Add this script at the end of the body section -->
+    <script>
+        function submitForm() {
+            var form = document.getElementById('uploadForm');
+            var formData = new FormData(form);
+
+            fetch('upload.php', {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Server response:', data);
+                    if (data.success) {
+                        // Clear form fields and add new content to the display
+                        form.reset();
+                        fetchUploadedContent();
+                    } else {
+                        alert('Error uploading content. Please try again.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error uploading content:', error);
+                });
+        }
+
+        function fetchUploadedContent() {
+            // Fetch and dynamically add uploaded content to the display
+            fetch('get_uploaded_content.php')
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Fetched content:', data);
+                    displayContent(data);
+                })
+                .catch(error => {
+                    console.error('Error fetching content:', error);
+                });
+        }
+
+        function displayContent(content) {
+            var displaySection = document.getElementById('display');
+            displaySection.innerHTML = '<h2>Business Advertisements</h2>';
+
+            // Create elements to display each content item
+            content.forEach(item => {
+                var div = document.createElement('div');
+                div.innerHTML = `<img src="${item.image}" alt="Business Image">
+                                <p>${item.description}</p>`;
+                displaySection.appendChild(div);
+            });
+        }
+
+        // Fetch uploaded content on page load
+        document.addEventListener('DOMContentLoaded', fetchUploadedContent);
+    </script>
+</body>
+
+</html>
 
