@@ -11,7 +11,8 @@ if (isset($_FILES['image']) && isset($_POST['description'])) {
         echo json_encode(['success' => true, 'message' => 'File uploaded successfully', 'file' => $uploadedFile]);
     } else {
         // Return an error response
-        echo json_encode(['success' => false, 'message' => 'Error moving file']);
+        $error_message = error_get_last();
+        echo json_encode(['success' => false, 'message' => 'Error moving file', 'error' => $error_message]);
     }
 } else {
     // Return an error response if no file or description was provided
